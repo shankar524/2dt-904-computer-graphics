@@ -7,3 +7,6 @@ class Color:
         self.b = b
     def asArray(self):
         return np.array([self.r, self.g, self.b], dtype=np.float32)
+
+    def __str__(self):
+        return f'Color({self.r}, {self.g}, {self.b})'
