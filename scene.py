@@ -1,10 +1,11 @@
 from OpenGL.GL import glEnable, glClear, GL_CULL_FACE, GL_DEPTH_TEST, GL_DEPTH_BUFFER_BIT, GL_COLOR_BUFFER_BIT
 from light import Light
 from matrix import Matrix
+from camera import Camera
 
 class Scene:
-    def __init__(self, cameraPos = [0, 0, -20], light=Light(position=[1, 1, 1], color=(1, 1, 1)), objects=None):
-        self.cameraPos = cameraPos
+    def __init__(self, camera = Camera(), light=Light(), objects=None):
+        self.camera = camera
         self.light = light
         self.objects = objects if objects is not None else []
 
@@ -15,11 +16,16 @@ class Scene:
         for object in self.objects:
             object.upload(program)
 
-        projection = Matrix.makePerspective()
-        invCameraPos = Matrix.makeTranslation(self.cameraPos[0], self.cameraPos[1], self.cameraPos[2])
+        projection = Matrix.makePerspective(self.camera.angleOfView, self.camera.aspectRatio, self.camera.near, self.camera.far)
+        [x, y, z] = self.camera.position
+        invCameraPos = Matrix.makeTranslation(x, y, z)
         mProjView = projection @ invCameraPos
 
         program.setUniformMat4('mProjView', mProjView)
+
+        program.setUniformVec3('lightPos', self.light.position)
+        program.setUniformVec3('viewPos', self.camera.position)
+        program.setUniformVec3('lightColor', self.light.color.asArray())
 
         glEnable(GL_CULL_FACE)
         glEnable(GL_DEPTH_TEST)
