@@ -17,7 +17,9 @@ This repo contains programming assignment for the course 2DT904(Computer Graphic
     ```
     python3 1-solar.py
     ```
-    <video src='./media/solar-system-simulation.mp4' width=180/>
+    https://github.com/user-attachments/assets/f7109f97-ac48-4aa4-b3d1-f4f604045483
+
+
 4. Run Data visualization
     ```
     python3 2-data-visualization.py
