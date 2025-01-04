@@ -48,6 +48,14 @@ class Program(object):
         ref = glGetUniformLocation(self.programId, name)
         glUniform1f(ref, value)
 
+    def setUniformBoolean(self, name, value):
+        ref = glGetUniformLocation(self.programId, name)
+        glUniform1i(ref, 1 if value==True else 0)
+
+    def setUniformVec3(self, name, value):
+        ref = glGetUniformLocation(self.programId, name)
+        glUniform3f(ref, value[0], value[1], value[2])
+
     def setUniformVec4(self, name, value):
         ref = glGetUniformLocation(self.programId, name)
         glUniform4fv(ref, 1, np.array(value, dtype=np.float32))
