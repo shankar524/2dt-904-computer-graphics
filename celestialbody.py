@@ -16,7 +16,7 @@ class Renderable(ABC):
         pass
 
 class CelestialBody(Renderable):
-    def __init__(self, name, scaleFactor=1, translation=[0,0,0], rotationSpeed=0, revolutionSpeed=0, color=Color(1, 1, 1), ambience=0, diffuse=0.5, specular=1, shininess=0.0005, revolvesAround=None, emitsLight=False, variationPercentage=0, variationColors=[Color(1, 1, 1), Color(0, 0, 0)]):
+    def __init__(self, name, scaleFactor=1, translation=[0,0,0], rotationSpeed=0, revolutionSpeed=0, color=Color(1, 1, 1), ambience=0.15, diffuse=0.6, specular=1, shininess=0.5, revolvesAround=None, emitsLight=False, variationPercentage=0, variationColors=[Color(1, 1, 1), Color(0, 0, 0)]):
         self.name = name
         self.scaleFactor = scaleFactor
         self.translation = translation
