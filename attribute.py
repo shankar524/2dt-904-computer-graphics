@@ -1,6 +1,7 @@
 from OpenGL.GL import *
 import numpy as np
 
+# This class allows associate shader variable from python. Copied from book.
 class Attribute(object):
     def __init__(self, dataType, data):
         # type of elements in data array:

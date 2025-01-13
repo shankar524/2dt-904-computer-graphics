@@ -2,6 +2,7 @@ from OpenGL.GL import *
 from sphere import generateSphere
 from attribute import Attribute
 from color import Color
+from position import Position
 from matrix import Matrix
 from abc import ABC, abstractmethod
 import numpy as np
@@ -16,14 +17,13 @@ class Renderable(ABC):
         pass
 
 class CelestialBody(Renderable):
-    def __init__(self, name, scaleFactor=1, translation=[0,0,0], rotationSpeed=0, revolutionSpeed=0, color=Color(1, 1, 1), ambience=0.15, diffuse=0.6, specular=1, shininess=0.5, revolvesAround=None, emitsLight=False, variationPercentage=0, variationColors=[Color(1, 1, 1), Color(0, 0, 0)]):
+    def __init__(self, name, scaleFactor=1, translation=Position(), rotationSpeed=0, revolutionSpeed=0, color=Color(1, 1, 1), ambience=0.15, diffuse=0.6, specular=1, shininess=0.5, revolvesAround=None, emitsLight=False, variationPercentage=0, variationColors=[Color(1, 1, 1), Color(0, 0, 0)]):
         self.name = name
         self.scaleFactor = scaleFactor
         self.translation = translation
         self.rotationSpeed = rotationSpeed
         self.revolutionSpeed = revolutionSpeed
         self.color = color
-        self.vao = glGenVertexArrays(1)
         self.revolvesAround = revolvesAround
         self.ambience = ambience
         self.diffuse = diffuse
@@ -32,7 +32,9 @@ class CelestialBody(Renderable):
         self.emitsLight = emitsLight
         self.variationPercentage = variationPercentage
         self.variationColors = variationColors
+
         self.translationMatrix = np.identity(4, dtype=np.float32)
+        self.vao = glGenVertexArrays(1)
 
     def generateColorVariation(self):
 
@@ -60,34 +62,28 @@ class CelestialBody(Renderable):
         glBindVertexArray(self.vao)
 
         self.vertices = generateSphere(radiusSegments=64,heightSegments=64)
-        positionAttributeSquare = Attribute("vec3", self.vertices)
-        positionAttributeSquare.associateVariable(program, "position" )
+        vertexAttribute = Attribute("vec3", self.vertices)
+        vertexAttribute.associateVariable(program, "position" )
 
-        colorAttributeSquare = Attribute("vec3", self.generateColorVariation())
-        colorAttributeSquare.associateVariable(program, "vertexColor" )
+        colorAttribute = Attribute("vec3", self.generateColorVariation())
+        colorAttribute.associateVariable(program, "vertexColor" )
 
     def draw(self, program, dt, time):
         glBindVertexArray(self.vao)
 
-        tansl_x, tansl_y, tansl_z = self.translation
-        if self.revolvesAround is None:
-            # Calculate the model matrix for celestial bodies that do not revolve around another body
-            self.translationMatrix = (
-                Matrix.makeRotationZ(time * self.rotationSpeed) @
-                Matrix.rotation_matrix(time * self.revolutionSpeed, [0, 0, 1]) @
-                Matrix.makeScale(self.scaleFactor) @
-                Matrix.makeTranslation(tansl_x, tansl_y, tansl_z)
-            )
-        else:
-            # Calculate the model matrix for celestial bodies that revolve around another body
-            parent_matrix = self.revolvesAround.translationMatrix
-            self.translationMatrix = (
-                parent_matrix @
-                Matrix.rotation_matrix(time * self.revolutionSpeed, [0, 0, 1]) @
-                Matrix.makeTranslation(tansl_x, tansl_y, tansl_z) @
-                Matrix.makeRotationZ(time * self.rotationSpeed) @
-                Matrix.makeScale(self.scaleFactor)
-            )
+        baseTransformation = np.identity(4, dtype=np.float32)
+        revolution_pivot = [0, 0, 1] # Default pivot is the z-axis
+
+        if self.revolvesAround is not None:
+            baseTransformation = self.revolvesAround.translationMatrix
+
+        self.translationMatrix = (
+            baseTransformation @
+            Matrix.rotation_matrix(time * self.revolutionSpeed, revolution_pivot) @
+            Matrix.makeTranslation(self.translation.x, self.translation.y, self.translation.z) @
+            Matrix.makeRotationZ(time * self.rotationSpeed) @
+            Matrix.makeScale(self.scaleFactor)
+        )
 
         program.setUniformFloat('ambientStrength', self.ambience)
         program.setUniformFloat('diffuseStrength', self.diffuse)

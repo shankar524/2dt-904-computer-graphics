@@ -17,14 +17,13 @@ class Scene:
             object.upload(program)
 
         projection = Matrix.makePerspective(self.camera.angleOfView, self.camera.aspectRatio, self.camera.near, self.camera.far)
-        [x, y, z] = self.camera.position
-        invCameraPos = Matrix.makeTranslation(x, y, z)
+        invCameraPos = Matrix.makeTranslation(self.camera.position.x, self.camera.position.y, self.camera.position.z)
         mProjView = projection @ invCameraPos
 
         program.setUniformMat4('mProjView', mProjView)
 
-        program.setUniformVec3('lightPos', self.light.position)
-        program.setUniformVec3('viewPos', self.camera.position)
+        program.setUniformVec3('lightPos', self.light.position.asArray())
+        program.setUniformVec3('viewPos', self.camera.position.asArray())
         program.setUniformVec3('lightColor', self.light.color.asArray())
 
         glEnable(GL_CULL_FACE)
