@@ -61,7 +61,7 @@ class CelestialBody(Renderable):
     def upload(self, program):
         glBindVertexArray(self.vao)
 
-        self.vertices = generateSphere(radiusSegments=64,heightSegments=64)
+        self.vertices = generateSphere(radiusSegments=64, heightSegments=64)
         vertexAttribute = Attribute("vec3", self.vertices)
         vertexAttribute.associateVariable(program, "position" )
 
