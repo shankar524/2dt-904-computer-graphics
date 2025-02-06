@@ -52,6 +52,10 @@ class Program(object):
         ref = glGetUniformLocation(self.programId, name)
         glUniform1i(ref, 1 if value==True else 0)
 
+    def setUniformVec2(self, name, value):
+        ref = glGetUniformLocation(self.programId, name)
+        glUniform2f(ref, value[0], value[1])
+
     def setUniformVec3(self, name, value):
         ref = glGetUniformLocation(self.programId, name)
         glUniform3f(ref, value[0], value[1], value[2])

@@ -20,8 +20,7 @@ void main() {
     vec3 lightDir = normalize(lightPosition - fragPos);
 
     if (emitsLight) {
-        lightDir=normalize(fragPos - lightPosition);
-        float diff = max(dot(-normal, normal), 0.0);
+        // multiply ambience for light source
         ambient = 10 * ambientStrength * lightColor;
     } else {
         float diff = max(dot(normal, lightDir), 0.0);
@@ -35,7 +34,7 @@ void main() {
         if(diff > 0.0) {
             vec3 viewDir = normalize(viewPos - fragPos);
             vec3 reflectDir = reflect(-lightDir, normal);
-            float spec = pow(max(dot(viewDir, reflectDir), 0.0), 16);
+            float spec = pow(max(dot(viewDir, reflectDir), 0.0), 8);
             specular = shininess * spec * lightColor;
         }
     }
